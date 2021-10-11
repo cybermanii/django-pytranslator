@@ -1,20 +1,30 @@
 from django.shortcuts import render
-from translate import Translator
+
+# https://stackabuse.com/text-translation-with-google-translate-api-in-python/
+from googletrans import Translator
+import googletrans
 
 HISTORY_TRANSLATIONS =list()
 
 def index_translator(request):
+    try:
 
-    # if request.method == 'GET':
-    #     print(request.method)
-    #     return render(request, 'index.html',{'TextTranslated':''})
-    if request.method == 'GET' and request.GET.get('from_language') != None:
-        print(request.GET.get('from_language'))
-        fromLang, toLang, fromText = request.GET['from_language'], request.GET['to_language'], request.GET['from_text']
-        traductor = Translator(from_lang=str(fromLang), to_lang=str(toLang))
-        traduccion = traductor.translate(fromText)
-        HISTORY_TRANSLATIONS.append({'to':toLang, 'from':fromLang, 'fromtext':fromText, 'totext':traduccion})
+        idiomas = googletrans.LANGUAGES # get available languages
 
-        return render(request, 'index.html',{'TextTranslated':traduccion, 'TextToTranslate':fromText, 'lang_from':fromLang, 'lang_to':toLang, 'HISTORY_TRANSLATIONS':HISTORY_TRANSLATIONS})    
+        if request.method == 'GET' and request.GET.get('from_language') != None:
 
-    return render(request, 'index.html')
+            fromLang, toLang, fromText = request.GET.get('from_language'), request.GET.get('to_language'), request.GET.get('from_text')
+            fromLang = 'spanish' if fromLang == 'Spanish' else fromLang
+            translator = Translator(service_urls=['translate.googleapis.com'])
+
+            result = translator.translate(fromText, dest=str(toLang))
+
+            HISTORY_TRANSLATIONS.append({'to':toLang, 'from':fromLang, 'fromtext':fromText, 'totext':result.text})
+
+            return render(request, 'index.html',{'TextTranslated':result.text, 'idiomas': idiomas, 'TextToTranslate':fromText, 'lang_from':fromLang, 'lang_to':toLang, 'HISTORY_TRANSLATIONS':HISTORY_TRANSLATIONS})    
+
+        return render(request, 'index.html', {'idiomas': idiomas})
+
+    except ConnectionError:
+        return render(request, 'index.html')
+        

@@ -19,6 +19,6 @@ from app.views import index_translator
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('index/', index_translator),
+    path('', index_translator),
     
 ]

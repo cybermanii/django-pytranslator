@@ -9,7 +9,7 @@ HISTORY_TRANSLATIONS =list()
 def index_translator(request):
     try:
 
-        idiomas = googletrans.LANGUAGES # get available languages
+        idiomas = googletrans.LANGUAGES # get available languages, nombre completo, cedula,  fecha del dia, restablecer2sa
 
         if request.method == 'GET' and request.GET.get('from_language') != None:
 
